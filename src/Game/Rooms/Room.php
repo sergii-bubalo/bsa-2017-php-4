@@ -38,7 +38,7 @@ abstract class Room implements Position
         return strtolower(str_replace(__NAMESPACE__ . "\\", "", get_called_class()));
     }
 
-    public function addArtifact(ArtifactItem $artifactItem)
+    public function addArtifactItem(ArtifactItem $artifactItem)
     {
         $this->artifacts[$artifactItem->getName()][] = $artifactItem;
 
