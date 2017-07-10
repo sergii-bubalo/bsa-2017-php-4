@@ -18,6 +18,11 @@ class Player
         $this->equipment = [];
     }
 
+    public function getPosition()
+    {
+        return $this->position;
+    }
+
     public function go(string $position): void
     {
         $this->position = $this->position->getRoom($position);

@@ -2,33 +2,71 @@
 
 namespace BinaryStudioAcademy\Game;
 
+use BinaryStudioAcademy\Game\Artifacts\Coin;
 use BinaryStudioAcademy\Game\Contracts\Io\Reader;
 use BinaryStudioAcademy\Game\Contracts\Io\Writer;
+use BinaryStudioAcademy\Game\Rooms\Basement;
+use BinaryStudioAcademy\Game\Rooms\Bedroom;
+use BinaryStudioAcademy\Game\Rooms\Cabinet;
+use BinaryStudioAcademy\Game\Rooms\Corridor;
+use BinaryStudioAcademy\Game\Rooms\Hall;
 
 class Game
 {
     const COINS_TO_WIN = 5;
+    private $player;
+    private $service;
+
+    public function __construct()
+    {
+        $hall = new Hall();
+        $bedroom = new Bedroom();
+        $cabinet = new Cabinet();
+        $basement = new Basement();
+        $corridor = new Corridor();
+
+        $this->player = new Player($hall);
+        $this->service = new GameService($this);
+
+        $hall->addArtifactItem(new Coin());
+        $bedroom->addArtifactItem(new Coin());
+        $cabinet->addArtifactItem(new Coin());
+        $basement->addArtifactItem(new Coin())->addArtifactItem(new Coin());
+
+        $bedroom->addAvailableRoom($corridor);
+        $cabinet->addAvailableRoom($corridor);
+        $basement->addAvailableRoom($cabinet)->addAvailableRoom($hall);
+        $hall->addAvailableRoom($basement)->addAvailableRoom($corridor);
+        $corridor->addAvailableRoom($hall)->addAvailableRoom($cabinet)->addAvailableRoom($bedroom);
+    }
 
     public function start(Reader $reader, Writer $writer): void
     {
-        //TODO: Implement infinite loop and process user's input
+        while(true) {
+            $writer->write("Enter next command: ");
 
-        // Feel free to delete these lines
+            $this->run($reader, $writer);
 
-        $writer->writeln("You can't play yet. Please read input and convert it to commands.");
-        $writer->writeln("Don't forget to create game's world.");
-
-        $writer->write("Type your name:");
-        $input = trim($reader->read());
-
-        $writer->writeln("Good luck with this task, {$input}!");
+            if ($this->service->isComplete()) {
+                break;
+            }
+        }
     }
 
     public function run(Reader $reader, Writer $writer)
     {
-        //TODO: Implement step by step mode with game state persistence between steps
+        $input = trim($reader->read());
 
-        $writer->writeln("You can't play yet. Please read input and convert it to commands.");
-        $writer->writeln("Don't forget to create game's world.");
+        $params = explode(" ", $input);
+
+        $command = array_shift($params);
+
+        $this->service->command($command, $params);
+
+        $writer->writeln($this->service->getMessage());
+    }
+
+    public function getPlayer() {
+        return $this->player;
     }
 }

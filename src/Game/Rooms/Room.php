@@ -14,15 +14,15 @@ abstract class Room implements Position
 
     public function addAvailableRoom(Room $room)
     {
-        $this->rooms[$room->getRoomName()][] = $room;
+        $this->rooms[$room->getRoomName()] = $room;
 
         return $this;
     }
 
-    public function getRoom(string $roomName): string
+    public function getRoom(string $roomName): Room
     {
         if (!isset($this->rooms[$roomName])) {
-            throw new NotFoundException("{$roomName} is unavailable");
+            throw new NotFoundException("Can not go to {$roomName}.");
         }
 
         return $this->rooms[$roomName];
@@ -35,7 +35,8 @@ abstract class Room implements Position
 
     public function getRoomName(): string
     {
-        return strtolower(str_replace(__NAMESPACE__ . "\\", "", get_called_class()));
+        $ns = __NAMESPACE__ . "\\";
+        return strtolower(str_replace($ns, "", get_called_class()));
     }
 
     public function addArtifactItem(ArtifactItem $artifactItem)
@@ -48,10 +49,10 @@ abstract class Room implements Position
     public function popArtifactItem(string $artifactItemName): ArtifactItem
     {
         if (!isset($this->artifacts[$artifactItemName])) {
-            throw new NotFoundException("This room is empty of {$artifactItemName}s... Sorry, Bro )");
+            throw new NotFoundException("There is no {$artifactItemName}s left here. Type 'where' to go to another location.");
         }
-        if (empty($this->$this->artifacts[$artifactItemName])) {
-            throw new EmptyException("This room is empty of {$artifactItemName}s... Sorry, Bro )");
+        if (empty($this->artifacts[$artifactItemName])) {
+            throw new EmptyException("There is no {$artifactItemName}s left here. Type 'where' to go to another location.");
         }
 
         return array_pop($this->artifacts[$artifactItemName]);

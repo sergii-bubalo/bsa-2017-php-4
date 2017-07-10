@@ -8,6 +8,7 @@ abstract class ArtifactItem implements Artifact
 {
     public function getName(): string
     {
-        return strtolower(str_replace(__NAMESPACE__ . '\\', '', get_called_class()));
+        $ns = __NAMESPACE__ . '\\';
+        return strtolower(str_replace($ns,'', get_called_class()));
     }
 }
